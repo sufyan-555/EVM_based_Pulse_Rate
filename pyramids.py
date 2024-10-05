@@ -1,7 +1,8 @@
 import cv2
 import numpy as np
+from constants import LAP_LEVELS
 
-def gaussian_pyramids(image, levels=5):
+def gaussian_pyramids(image, levels):
     """
     Generate a Gaussian pyramid from the given image.
 
@@ -12,24 +13,17 @@ def gaussian_pyramids(image, levels=5):
     Returns:
         A list of numpy arrays representing the Gaussian pyramid.
     """
-    # Convert the image to a float32 for smoother downsampling
-    float_img = np.array(image, dtype=np.float32)
+    g_pyramids = [image]
 
-    # The Gaussian pyramid is a list of images, with the original image as the first element
-    g_pyramids = [float_img]
-
-    # Iterate over the levels and downsample the image
+    # Iterate over the levels and generate the Gaussian pyramid.
     for i in range(levels - 1):
-        # Downsample the image using OpenCVs pyrDown function
-        float_img = cv2.pyrDown(float_img)
-
-        # Add the downsampled image to the list of Gaussian pyramid images
-        g_pyramids.append(float_img)
-
+        # Downsample the image using Gaussian blur.
+        image=cv2.pyrDown(image)
+        g_pyramids.append(image)
     return g_pyramids
 
 
-def laplacian_pyramids(image,levels=5):
+def laplacian_pyramids(image,levels):
     """
     Generate a Laplacian pyramid from the given image.
 
@@ -61,3 +55,18 @@ def laplacian_pyramids(image,levels=5):
     # Append the last level of the Gaussian pyramid to the Laplacian pyramid.
     l_pyramids.append(g_pyramids[-1])
     return l_pyramids
+
+def build_pramaids(frames,levels=LAP_LEVELS):
+    lap_video = []
+    for i , frame in enumerate(frames):
+        pyramid = laplacian_pyramids(frame,levels)
+        for j in range(levels):
+            if i == 0:
+                lap_video.append(np.zeros(shape=(
+                    len(frames),
+                    pyramid[j].shape[0],
+                    pyramid[j].shape[1],
+                    pyramid[j].shape[2]
+                )))
+            lap_video[j][i] = pyramid[j]
+    return lap_video
