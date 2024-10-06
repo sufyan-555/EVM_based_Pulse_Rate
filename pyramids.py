@@ -56,7 +56,7 @@ def laplacian_pyramids(image,levels):
     l_pyramids.append(g_pyramids[-1])
     return l_pyramids
 
-def build_pramaids(frames, levels=LAP_LEVELS):
+def build_pramaids(frames,levels=LAP_LEVELS):
     """
     Builds a pyramid for a given video.
 
@@ -67,21 +67,20 @@ def build_pramaids(frames, levels=LAP_LEVELS):
     Returns:
         A list of numpy arrays representing the pyramid for the video.
     """
-
-    # Initialize the pyramid with zeros.
+    # Initialize the pyramid for the video.
     lap_video = []
-    for j in range(levels):
-        lap_video.append(np.zeros(shape=(len(frames),
-                                       frames[0].shape[0],
-                                       frames[0].shape[1],
-                                       frames[0].shape[2])))
-
-    # Iterate over the frames and generate the pyramid for each frame.
-    for i, frame in enumerate(frames):
-        pyramid = laplacian_pyramids(frame, levels)
-
-        # Append the pyramid for the current frame to the pyramid for the video.
+    for i , frame in enumerate(frames):
+        # Generate the pyramid for the current frame.
+        pyramid = laplacian_pyramids(frame,levels)
         for j in range(levels):
+            # If this is the first frame, initialize the pyramid with zeros.
+            if i == 0:
+                lap_video.append(np.zeros(shape=(
+                    len(frames),
+                    pyramid[j].shape[0],
+                    pyramid[j].shape[1],
+                    pyramid[j].shape[2]
+                )))
+            # Add the current frame of the pyramid to the video pyramid.
             lap_video[j][i] = pyramid[j]
-
     return lap_video
