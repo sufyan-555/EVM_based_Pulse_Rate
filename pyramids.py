@@ -22,7 +22,6 @@ def gaussian_pyramids(image, levels):
         g_pyramids.append(image)
     return g_pyramids
 
-
 def laplacian_pyramids(image,levels):
     """
     Generate a Laplacian pyramid from the given image.
@@ -46,7 +45,7 @@ def laplacian_pyramids(image,levels):
         height, width, depth = upsampled.shape
         
         # Resize the current level in the Gaussian pyramid to match the upsampled image.
-        g_pyramids[i] = cv2.resize(g_pyramids[i], (height, width))
+        g_pyramids[i] = cv2.resize(g_pyramids[i], (width, height))
         
         # Calculate the difference between the two levels, and append to the Laplacian pyramid.
         diff = cv2.subtract(g_pyramids[i], upsampled)
