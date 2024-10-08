@@ -13,13 +13,15 @@ def gaussian_pyramids(image, levels):
     Returns:
         A list of numpy arrays representing the Gaussian pyramid.
     """
-    g_pyramids = [image]
+    float_img = np.ndarray(shape=image.shape, dtype="float")
+    float_img[:] = image
+    g_pyramids = [float_img]
 
     # Iterate over the levels and generate the Gaussian pyramid.
     for i in range(levels - 1):
         # Downsample the image using Gaussian blur.
-        image=cv2.pyrDown(image)
-        g_pyramids.append(image)
+        float_img=cv2.pyrDown(float_img)
+        g_pyramids.append(float_img)
     return g_pyramids
 
 def laplacian_pyramids(image,levels):
@@ -42,8 +44,11 @@ def laplacian_pyramids(image,levels):
         upsampled = cv2.pyrUp(g_pyramids[i + 1])
         
         # Get the dimensions of the upsampled image.
-        height, width, depth = upsampled.shape
-        
+        if len(upsampled.shape) == 3:
+            height, width, depth = upsampled.shape
+        else:
+            height, width = upsampled.shape
+
         # Resize the current level in the Gaussian pyramid to match the upsampled image.
         g_pyramids[i] = cv2.resize(g_pyramids[i], (width, height))
         
@@ -74,12 +79,20 @@ def build_pramaids(frames,levels=LAP_LEVELS):
         for j in range(levels):
             # If this is the first frame, initialize the pyramid with zeros.
             if i == 0:
-                lap_video.append(np.zeros(shape=(
-                    len(frames),
-                    pyramid[j].shape[0],
-                    pyramid[j].shape[1],
-                    pyramid[j].shape[2]
-                )))
+                if len(pyramid[j].shape) == 3:
+                    lap_video.append(np.zeros(shape=(
+                        len(frames),
+                        pyramid[j].shape[0],
+                        pyramid[j].shape[1],
+                        pyramid[j].shape[2]
+                    )))
+                else:
+                    lap_video.append(np.zeros(shape=(
+                        len(frames),
+                        pyramid[j].shape[0],
+                        pyramid[j].shape[1]
+                    )))
+
             # Add the current frame of the pyramid to the video pyramid.
             lap_video[j][i] = pyramid[j]
     return lap_video
