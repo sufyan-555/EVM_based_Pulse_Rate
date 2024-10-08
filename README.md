@@ -5,7 +5,7 @@ This repository contains the code for a pulse rate detection app using the Euler
 The program works by reading in a video of a user's face, and then using the EVM technique to magnify the subtle changes in the user's skin color caused by their pulse. The resulting video is then processed using a Fast Fourier Transform (FFT) to detect the pulse rate.
 
 The program is designed to be run from the command line, and requires a video file as an argument. The program will then output the detected pulse rate in beats per minute.
-
+  
 The program is written in Python and is designed to be run on a Linux or Windows system with OpenCV and SciPy installed.
 
 ## File Structure
